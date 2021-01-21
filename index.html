@@ -1,13 +1,21 @@
 <html>
     <head>
         <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+        <link rel="stylesheet" href="index.css">
     </head>
     <body>
-        <div id="timer" style="text-align: center;">
-            <p>00:00:00</p>
+        <div style="text-align: center;">
+            <p id="timer">00:00:00</p>
+        </div>
+        <br>
+        <div style="text-align: center;">
+            <p id="scramble">[Scramble goes here]</p>
         </div>
     </body>
     <script>
+        function randInt (min, max) {
+            return Math.floor((Math.random() * (max - min)) + min);
+        }
         var timerFlag = false;
         var counter = 0;
         var dt = 75;
@@ -15,17 +23,46 @@
         var time;
         var end;
         var timerObject = document.getElementById("timer");
+        var scrambleObject = document.getElementById("scramble");
+        function setScramble () {
+            var scramble = generateScramble (10,20);
+            scrambleObject.innerHTML = scramble;
+        }
+        function generateScramble (minM, maxM) {
+            var moves = ["R","R'","R2","L","L'","L2","F","F'","F2","U","U'","U2","D","D'","D2","B","B'","B2"];
+            scrlen = randInt (minM,maxM);
+            scrlist = "Scramble: ";
+            for (i = 0; i < scrlen; i++) {
+                scrlist += moves[randInt (0,moves.length - 1)] + " ";
+            }
+            return scrlist;
+        }
+
+        // sauce : https://stackoverflow.com/questions/21294302/converting-milliseconds-to-minutes-and-seconds-with-javascript
+        
+        function timify (duration) {
+        var milliseconds = parseInt((duration%1000))
+            , seconds = parseInt((duration/1000)%60)
+            , minutes = parseInt((duration/(1000*60))%60)
+            , hours = parseInt((duration/(1000*60*60))%24);
+
+        hours = (hours < 10) ? "0" + hours : hours;
+        minutes = (minutes < 10) ? "0" + minutes : minutes;
+        seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+        return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
+        }
+
         function updateTimer () {
             if (timerFlag)
             {
                 time += dt;
-                timerObject.innerHTML = time;
+                timerObject.innerHTML = timify (time);
             }
         }
         function timerEnd () {
             timerObject.innerHTML = end - start;
         }
-        window.setInterval(updateTimer, dt);
 
         $(function(){
             $(document).on('keydown', function(){
@@ -39,12 +76,16 @@
                 {
                     end = Date.now()
                     timerFlag = false;
-                    timerObject.innerHTML = end - start;
+                    timerObject.innerHTML = timify (end - start);
                     xhttp.open("GET",window.location.href.concat("timegoesbrr?a=stop"), true);
                     xhttp.send();
+                    setScramble ();
                 }
                 counter += 1;
             });
         });
+        // Init Stuff
+        window.setInterval(updateTimer, dt);
+        setScramble ();
     </script>
 </html>
