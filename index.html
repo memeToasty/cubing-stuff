@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    </head>
+    <body>
+        <div id="timer" style="text-align: center;">
+            <p>00:00:00</p>
+        </div>
+    </body>
+    <script>
+        var timerFlag = false;
+        var counter = 0;
+        var dt = 75;
+        var start;
+        var time;
+        var end;
+        var timerObject = document.getElementById("timer");
+        function updateTimer () {
+            if (timerFlag)
+            {
+                time += dt;
+                timerObject.innerHTML = time;
+            }
+        }
+        function timerEnd () {
+            timerObject.innerHTML = end - start;
+        }
+        window.setInterval(updateTimer, dt);
+
+        $(function(){
+            $(document).on('keydown', function(){
+                var xhttp = new XMLHttpRequest();
+                if (counter % 2 == 0)
+                {
+                    start = Date.now()
+                    time = 0;
+                    timerFlag = true;
+                } else 
+                {
+                    end = Date.now()
+                    timerFlag = false;
+                    timerObject.innerHTML = end - start;
+                    xhttp.open("GET",window.location.href.concat("timegoesbrr?a=stop"), true);
+                    xhttp.send();
+                }
+                counter += 1;
+            });
+        });
+    </script>
+</html>
