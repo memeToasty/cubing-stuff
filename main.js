@@ -1,6 +1,7 @@
 const express = require('express')
 const fs = require('fs');
 const app = express()
+const db = require('./database.js');
 
 //index.css
 app.get('/index.css', function (req, res) {
@@ -28,7 +29,6 @@ app.get('/favicon.ico', function (req, res) {
 
 //main landing page
 app.get('/', function (req, res) {
-  console.log(req.query)
   fs.readFile(process.cwd()+"/index.html", function(err,data)
   {
     if(err)
@@ -41,8 +41,16 @@ app.get('/', function (req, res) {
 
 //timing API
 app.get('/timegoesbrr', function (req, res) {
-    console.log(req.query)
+    params = req.query;
+    console.log(params);
+
+    // new User
+    if (params.n) {
+      var id = db.newUser(params.n, params.t);
+      // Initiate "cuber session"
+    }
     res.send(200);
 })
-  
-app.listen(1337)
+
+
+app.listen(1337);

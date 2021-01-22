@@ -11,11 +11,20 @@
         <div style="text-align: center;">
             <p id="scramble">[Scramble goes here]</p>
         </div>
+        <br>
+        <div style="text-align: center;">
+            <p>new User? <input id="newUser" type="checkbox"/></p>
+            <div id="userForm">
+                <p>Username:<input id="username" type="text"/></p>
+            </div>
+        </div>
     </body>
     <script>
+
         function randInt (min, max) {
             return Math.floor((Math.random() * (max - min)) + min);
         }
+        // global Variables -- just don't ask tbh ;_;
         var timerFlag = false;
         var counter = 0;
         var dt = 75;
@@ -24,10 +33,12 @@
         var end;
         var timerObject = document.getElementById("timer");
         var scrambleObject = document.getElementById("scramble");
+
         function setScramble () {
             var scramble = generateScramble (10,20);
             scrambleObject.innerHTML = scramble;
         }
+
         function generateScramble (minM, maxM) {
             var moves = ["R","R'","R2","L","L'","L2","F","F'","F2","U","U'","U2","D","D'","D2","B","B'","B2"];
             scrlen = randInt (minM,maxM);
@@ -65,27 +76,45 @@
         }
 
         $(function(){
-            $(document).on('keydown', function(){
-                var xhttp = new XMLHttpRequest();
-                if (counter % 2 == 0)
+            $(document).on('keydown', function(e){
+                var code = e.keyCode || e.which;
+                if (code == 32)
                 {
-                    start = Date.now()
-                    time = 0;
-                    timerFlag = true;
-                } else 
-                {
-                    end = Date.now()
-                    timerFlag = false;
-                    timerObject.innerHTML = timify (end - start);
-                    xhttp.open("GET",window.location.href.concat("timegoesbrr?a=stop"), true);
-                    xhttp.send();
-                    setScramble ();
+                    var xhttp = new XMLHttpRequest();
+                    if (counter % 2 == 0)
+                    {
+                        start = Date.now()
+                        time = 0;
+                        timerFlag = true;
+                    } else 
+                    {
+                        end = Date.now()
+                        timerFlag = false;
+                        var timedelta = end - start
+                        timerObject.innerHTML = timify (timedelta);
+
+                        if (document.getElementById("newUser").checked) {
+                            let name = document.getElementById("username").value;
+
+                            apiCall = "timegoesbrr?n=" + name + "&t=" + String(timedelta);
+                            xhttp.open("GET",window.location.href.concat(apiCall), true);
+                            xhttp.send();
+                        }
+                        setScramble ();
+                    }
                 }
                 counter += 1;
             });
         });
+
+        $("#newUser").click(function(){
+            $("#userForm").toggle(200);
+        });
+
         // Init Stuff
         window.setInterval(updateTimer, dt);
+        $("#userForm").hide();
+        $("#newUser").prop('checked', false);
         setScramble ();
     </script>
 </html>
