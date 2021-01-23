@@ -4,6 +4,9 @@
         <link rel="stylesheet" href="index.css">
     </head>
     <body>
+        <div id="session" style="text-align: right;">
+            <p class="usernameField">Username</p>
+        </div>
         <div style="text-align: center;">
             <p id="timer">00:00:00</p>
         </div>
@@ -113,6 +116,12 @@
 
         // Init Stuff
         window.setInterval(updateTimer, dt);
+        if (window.sessionStorage.getItem("id")) {
+            $(".usernameField").val = window.sessionStorage.getItem("id");
+            $("#session").show();
+        } else {
+            $("#session").hide();
+        }
         $("#userForm").hide();
         $("#newUser").prop('checked', false);
         setScramble ();

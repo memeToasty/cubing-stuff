@@ -7,8 +7,9 @@ module.exports = {
             "username" : name,
             "times" : time
         }
+        let id;
         db.insert(user, function (err, newDocs) {
-            var id = newDocs._id;
+            id = newDocs._id;
         });
         return id;
     },
