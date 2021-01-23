@@ -37,6 +37,20 @@
         var timerObject = document.getElementById("timer");
         var scrambleObject = document.getElementById("scramble");
 
+        function parseCookies () {
+            parsed = document.cookie
+            .split(';')
+            .reduce((res, c) => {
+                const [key, val] = c.trim().split('=').map(decodeURIComponent)
+                try {
+                return Object.assign(res, { [key]: JSON.parse(val) })
+                } catch (e) {
+                return Object.assign(res, { [key]: val })
+                }
+            }, {});
+            return parsed;
+        }
+
         function setScramble () {
             var scramble = generateScramble (10,20);
             scrambleObject.innerHTML = scramble;
@@ -116,8 +130,10 @@
 
         // Init Stuff
         window.setInterval(updateTimer, dt);
-        if (window.sessionStorage.getItem("id")) {
-            $(".usernameField").val = window.sessionStorage.getItem("id");
+        document.cookie = "id = 1337";
+        if (document.cookie.includes("id")) {
+            cookies = parseCookies();
+            $(".usernameField").text(cookies.id);
             $("#session").show();
         } else {
             $("#session").hide();

@@ -1,7 +1,11 @@
-const express = require('express')
+const express = require('express');
 const fs = require('fs');
-const app = express()
+const cookieParser = require('cookie-parser')
 const db = require('./database.js');
+
+const app = express();
+app.use(cookieParser());
+
 
 //index.css
 app.get('/index.css', function (req, res) {
@@ -15,7 +19,7 @@ app.get('/index.css', function (req, res) {
   });
 })
 
-//fav icon damit FireFox mir nicht auf den Sack geht
+//fav icon damit Browser mir nicht auf den Sack gehen
 app.get('/favicon.ico', function (req, res) {
   console.log(req.query)
   fs.readFile(process.cwd()+"/favico.ico", function(err,data)
@@ -29,6 +33,7 @@ app.get('/favicon.ico', function (req, res) {
 
 //main landing page
 app.get('/', function (req, res) {
+  console.log(req.cookies);
   fs.readFile(process.cwd()+"/index.html", function(err,data)
   {
     if(err)
@@ -48,6 +53,7 @@ app.get('/timegoesbrr', function (req, res) {
     if (params.n) {
       var id = db.newUser(params.n, params.t);
       // Initiate "cuber session"
+      //window.sessionStorage.setItem("id",id);
     }
     res.send(200);
 })
