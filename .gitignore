@@ -1,3 +1,4 @@
-todo
-credentials.json
-data.db
+/todo
+/credentials.json
+/data.db
+/node_modules
