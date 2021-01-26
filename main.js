@@ -2,10 +2,21 @@ const express = require('express');
 const fs = require('fs');
 const cookieParser = require('cookie-parser')
 const db = require('./database.js');
+const { time } = require('console');
 
 const app = express();
 app.use(cookieParser());
 
+function callLandingPage (req, res) {
+  console.log(req.cookies);
+  fs.readFile(process.cwd()+"/index.html", function(err,data)
+  {
+    if(err)
+      console.log(err)
+    else
+      res.send(data.toString());
+  });
+}
 
 //index.css
 app.get('/index.css', function (req, res) {
@@ -33,29 +44,28 @@ app.get('/favicon.ico', function (req, res) {
 
 //main landing page
 app.get('/', function (req, res) {
-  console.log(req.cookies);
-  fs.readFile(process.cwd()+"/index.html", function(err,data)
-  {
-    if(err)
-      console.log(err)
-    else
-      res.send(data.toString());
-  });
+  callLandingPage(req,res);
 })
 
 
 //timing API
-app.get('/timegoesbrr', function (req, res) {
+app.get('/timegoesbrr', async function (req, res) {
     params = req.query;
     console.log(params);
 
     // new User
     if (params.n) {
       var id = db.newUser(params.n, params.t);
+      await new Promise ((set) => {
+        setTimeout(set,100);
+      });
       // Initiate "cuber session"
-      //window.sessionStorage.setItem("id",id);
+      res.cookie('id',params.n);
+      res.status(200).json({
+        success: true
+      }).end();
+      
     }
-    res.send(200);
 })
 
 

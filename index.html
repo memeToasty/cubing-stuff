@@ -1,6 +1,7 @@
 <html>
     <head>
-        <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
         <link rel="stylesheet" href="index.css">
     </head>
     <body>
@@ -97,7 +98,6 @@
                 var code = e.keyCode || e.which;
                 if (code == 32)
                 {
-                    var xhttp = new XMLHttpRequest();
                     if (counter % 2 == 0)
                     {
                         start = Date.now()
@@ -114,8 +114,28 @@
                             let name = document.getElementById("username").value;
 
                             apiCall = "timegoesbrr?n=" + name + "&t=" + String(timedelta);
-                            xhttp.open("GET",window.location.href.concat(apiCall), true);
-                            xhttp.send();
+                            $.ajax({
+                                method: "get",
+                                url: apiCall,
+                                success: () => {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "register successfull"
+                                    }).then((response) => {
+                                        if (response.isConfirmed) {
+                                            location.reload(true);
+                                        }
+                                    });
+                                },
+                                error: (errdata) => {
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "fEhLeR",
+                                        text: errdata
+                                    });
+                                }
+                            });
+
                         }
                         setScramble ();
                     }
@@ -129,17 +149,21 @@
         });
 
         // Init Stuff
-        window.setInterval(updateTimer, dt);
-        document.cookie = "id = 1337";
-        if (document.cookie.includes("id")) {
-            cookies = parseCookies();
-            $(".usernameField").text(cookies.id);
-            $("#session").show();
-        } else {
-            $("#session").hide();
-        }
-        $("#userForm").hide();
-        $("#newUser").prop('checked', false);
-        setScramble ();
+        $(document).ready(function() {
+            console.log("loaded page");
+            window.setInterval(updateTimer, dt);
+
+            if (document.cookie.includes("id")) {
+                cookies = parseCookies();
+                $(".usernameField").text(cookies.id);
+                $("#session").show();
+            } else {
+                $("#session").hide();
+            }
+
+            $("#userForm").hide();
+            $("#newUser").prop('checked', false);
+            setScramble ();
+        });
     </script>
 </html>

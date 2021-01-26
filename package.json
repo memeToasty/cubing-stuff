@@ -15,5 +15,8 @@
     "nedb": "^1.8.0",
     "node-pre-gyp": "^0.17.0",
     "pg": "^8.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
