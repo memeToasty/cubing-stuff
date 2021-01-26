@@ -7,46 +7,7 @@ const { time } = require('console');
 const app = express();
 app.use(cookieParser());
 
-function callLandingPage (req, res) {
-  console.log(req.cookies);
-  fs.readFile(process.cwd()+"/index.html", function(err,data)
-  {
-    if(err)
-      console.log(err)
-    else
-      res.send(data.toString());
-  });
-}
-
-//index.css
-app.get('/index.css', function (req, res) {
-  console.log(req.query)
-  fs.readFile(process.cwd()+"/index.css", function(err,data)
-  {
-    if(err)
-      console.log(err)
-    else
-      res.send(data);
-  });
-})
-
-//fav icon damit Browser mir nicht auf den Sack gehen
-app.get('/favicon.ico', function (req, res) {
-  console.log(req.query)
-  fs.readFile(process.cwd()+"/favico.ico", function(err,data)
-  {
-    if(err)
-      console.log(err)
-    else
-      res.send(data);
-  });
-})
-
-//main landing page
-app.get('/', function (req, res) {
-  callLandingPage(req,res);
-})
-
+app.use("/",express.static("./src"));
 
 //timing API
 app.get('/timegoesbrr', async function (req, res) {
