@@ -32,7 +32,10 @@
                 <div class="col">
                     <p id="newUserText">new User? <input id="newUser" type="checkbox"/></p>
                 </div>
-                <div class="col" id="userForm">
+            </div>
+
+            <div class="row">
+                <div class="col userFormStuff" id="userForm">
                     <p>Username:<input id="username" type="text"/></p>
                 </div>
             </div>
@@ -132,16 +135,17 @@
                             $.ajax({
                                 method: "get",
                                 url: apiCall,
-                                success: () => {
+                                success: (result) => {
                                     Swal.fire({
                                         icon: "success",
                                         title: "Registration completed",
-                                        text: "Your account with the name " + name + " was registred"
+                                        text: result.id
                                     }).then((response) => {
                                         if (response.isConfirmed) {
                                             location.reload(true);
                                         }
                                     });
+                                    console.log(result);
                                 },
                                 error: (errdata) => {
                                     Swal.fire({
@@ -174,7 +178,7 @@
 
             if (document.cookie.includes("id")) {
                 cookies = parseCookies();
-                $(".usernameField").text(cookies.id);
+                $(".usernameField").text(cookies.name);
                 $("#session").show();
                 $("#newUserText").hide();
             } else {

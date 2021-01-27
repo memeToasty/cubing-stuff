@@ -16,16 +16,21 @@ app.get('/timegoesbrr', async function (req, res) {
 
     // new User
     if (params.n) {
-      var id = db.newUser(params.n, params.t);
+      const id = await db.newUser(params.n, params.t);
       await new Promise ((set) => {
         setTimeout(set,200);
       });
       // Initiate "cuber session"
-      res.cookie('id',params.n);
+      console.log(id);
+      res.cookie('id',id);
+      res.cookie('name',params.n)
       res.status(200).json({
-        success: true
+        success: true,
+        "id": id
       }).end();
       
+    } else {
+
     }
 })
 

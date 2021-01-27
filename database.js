@@ -2,19 +2,19 @@ var Datastore = require('nedb');
 var creds = require('./credentials.json');
 var db = new Datastore({ filename: creds.nedb.path, autoload: true });
 module.exports = {
-    newUser: (name, time) => {
+    newUser: async (name, time) => {
         let user = {
             "username" : name,
             "times" : time
-        }
-        let id;
-        db.insert(user, function (err, newDocs) {
-            id = newDocs._id;
+        };
+        return new Promise ((accept) => {
+            db.insert(user, (err, newDocs) => {
+                accept(newDocs._id);
+            });
         });
-        return id;
     },
     getUserData: (id) => {
-        db.find({username : 'toasty'}, function (err, docs) {
+        db.find({_id : id}, function (err, docs) {
             console.log (docs);
         });
     }
