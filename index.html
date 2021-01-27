@@ -1,0 +1,189 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <div class="container" style="margin-top: 20px;">
+            <div class="row align-items-center" id="session">
+                <div class="col">
+                    <button type="button" id="logout" class="btn btn-danger">Logout</button>
+                    <p class="usernameField">Username</p>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col">
+                    <p id="timer">00:00:00</p>
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col">
+                    <p id="scramble">[Scramble goes here]</p>
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col">
+                    <p id="newUserText">new User? <input id="newUser" type="checkbox"/></p>
+                </div>
+                <div class="col" id="userForm">
+                    <p>Username:<input id="username" type="text"/></p>
+                </div>
+            </div>
+    </div>
+    </body>
+    <script>
+
+        function randInt (min, max) {
+            return Math.floor((Math.random() * (max - min)) + min);
+        }
+        // global Variables -- just don't ask tbh ;_;
+        var timerFlag = false;
+        var counter = 0;
+        var dt = 75;
+        var start;
+        var time;
+        var end;
+        var timerObject = document.getElementById("timer");
+        var scrambleObject = document.getElementById("scramble");
+
+        function parseCookies () {
+            parsed = document.cookie
+            .split(';')
+            .reduce((res, c) => {
+                const [key, val] = c.trim().split('=').map(decodeURIComponent)
+                try {
+                return Object.assign(res, { [key]: JSON.parse(val) })
+                } catch (e) {
+                return Object.assign(res, { [key]: val })
+                }
+            }, {});
+            return parsed;
+        }
+
+        function setScramble () {
+            var scramble = generateScramble (10,20);
+            scrambleObject.innerHTML = scramble;
+        }
+
+        function generateScramble (minM, maxM) {
+            var moves = ["R","R'","R2","L","L'","L2","F","F'","F2","U","U'","U2","D","D'","D2","B","B'","B2"];
+            scrlen = randInt (minM,maxM);
+            scrlist = "Scramble: ";
+            for (i = 0; i < scrlen; i++) {
+                scrlist += moves[randInt (0,moves.length - 1)] + " ";
+            }
+            return scrlist;
+        }
+
+        // sauce : https://stackoverflow.com/questions/21294302/converting-milliseconds-to-minutes-and-seconds-with-javascript
+        
+        function timify (duration) {
+        var milliseconds = parseInt((duration%1000))
+            , seconds = parseInt((duration/1000)%60)
+            , minutes = parseInt((duration/(1000*60))%60)
+            , hours = parseInt((duration/(1000*60*60))%24);
+
+        hours = (hours < 10) ? "0" + hours : hours;
+        minutes = (minutes < 10) ? "0" + minutes : minutes;
+        seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+        return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
+        }
+
+        function updateTimer () {
+            if (timerFlag)
+            {
+                time += dt;
+                timerObject.innerHTML = timify (time);
+            }
+        }
+        function timerEnd () {
+            timerObject.innerHTML = end - start;
+        }
+
+        $(function(){
+            $(document).on('keyup', function(e){
+                var code = e.keyCode || e.which;
+                if (code == 32)
+                {
+                    if (counter % 2 == 0)
+                    {
+                        start = Date.now()
+                        time = 0;
+                        timerFlag = true;
+                    } else 
+                    {
+                        end = Date.now()
+                        timerFlag = false;
+                        var timedelta = end - start
+                        timerObject.innerHTML = timify (timedelta);
+
+                        if (document.getElementById("newUser").checked) {
+                            let name = document.getElementById("username").value;
+
+                            apiCall = "timegoesbrr?n=" + name + "&t=" + String(timedelta);
+                            $.ajax({
+                                method: "get",
+                                url: apiCall,
+                                success: () => {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Registration completed",
+                                        text: "Your account with the name " + name + " was registred"
+                                    }).then((response) => {
+                                        if (response.isConfirmed) {
+                                            location.reload(true);
+                                        }
+                                    });
+                                },
+                                error: (errdata) => {
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "fEhLeR",
+                                        text: errdata
+                                    });
+                                }
+                            });
+
+                        }
+                        setScramble ();
+                    }
+                }
+                counter += 1;
+            });
+        });
+
+        $("#newUser").click(function() {
+            $("#userForm").toggle(200);
+        });
+        $("#logout").click(function() {
+            $.removeCookie("id");
+            location.reload(true);
+        });
+
+        // Init Stuff
+        $(document).ready(function() {
+            window.setInterval(updateTimer, dt);
+
+            if (document.cookie.includes("id")) {
+                cookies = parseCookies();
+                $(".usernameField").text(cookies.id);
+                $("#session").show();
+                $("#newUserText").hide();
+            } else {
+                $("#session").hide();
+            }
+
+            $("#userForm").hide();
+            $("#newUser").prop('checked', false);
+            setScramble ();
+        });
+    </script>
+</html>
