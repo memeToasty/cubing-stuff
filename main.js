@@ -18,7 +18,7 @@ app.get('/timegoesbrr', async function (req, res) {
     if (params.n) {
       var id = db.newUser(params.n, params.t);
       await new Promise ((set) => {
-        setTimeout(set,100);
+        setTimeout(set,200);
       });
       // Initiate "cuber session"
       res.cookie('id',params.n);
