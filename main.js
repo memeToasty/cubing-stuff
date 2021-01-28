@@ -16,6 +16,7 @@ app.get('/timegoesbrr', async function (req, res) {
 
     // new User
     if (params.n) {
+      console.log("insert new user");
       const id = await db.newUser(params.n, params.t);
       await new Promise ((set) => {
         setTimeout(set,200);
@@ -29,8 +30,36 @@ app.get('/timegoesbrr', async function (req, res) {
         "id": id
       }).end();
       
-    } else {
+    } 
+    // log in
+    else if (params.li) {
+      const id = params.i;
+      const result = await db.getUserData(id);
+      console.log(result);
+      if (result.length == 1) {
+        res.cookie('id',id);
+        res.cookie('name', result[0].username);
+        res.status(200).json({
+          success: true
+        });
 
+      } else if (result.length == 0) {
+        console.log("sent 400")
+        res.status(400).json({
+          success: false,
+          msg: "No user with this id was found"
+        });
+
+      } else {
+        console.log("internal error");
+        res.status(555).json({
+          success: false,
+          msg: "Internal Error (found more than one id) Please file a bug report https://github.com/memeToasty/cubing-stuff/issues"
+        });
+      }
+    } else if (params.i) {
+      const id = params.i;
+      await db.insertTime (id, params.t);
     }
 })
 

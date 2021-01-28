@@ -5,7 +5,7 @@ module.exports = {
     newUser: async (name, time) => {
         let user = {
             "username" : name,
-            "times" : time
+            "times" : [time]
         };
         return new Promise ((accept) => {
             db.insert(user, (err, newDocs) => {
@@ -13,9 +13,25 @@ module.exports = {
             });
         });
     },
-    getUserData: (id) => {
-        db.find({_id : id}, function (err, docs) {
-            console.log (docs);
+    getUserData: async (id) => {
+        return new Promise ((accept) => {
+            db.find({_id : id}, function (err, docs) {
+                accept(docs);
+            });
+        });
+    },
+    insertTime: async (id, time) => {
+
+        var result = await getUserData(id);
+
+        return new Promise ((accept) => {
+            db.update(result, { 
+                $push: {
+                    times: time
+                } 
+            }, {}, function () {
+                accept('true');
+            });
         });
     }
 }
