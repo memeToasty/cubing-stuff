@@ -63,7 +63,7 @@
         var counter = 0;
         var dt = 75;
         var start;
-        var time;
+        var time = 0;
         var end;
         var timerObject = document.getElementById("timer");
         var scrambleObject = document.getElementById("scramble");
@@ -73,7 +73,6 @@
             arr.forEach(element => {
                 newT.push(element / 1000)
             });
-            console.log(newT)
             return newT
         }
 
@@ -95,7 +94,6 @@
                     method: "get",
                     url: "getData?id=" + id,
                     success: (data) => {
-                        console.log(data);
                         accept(data);
                     }
                 });
@@ -210,7 +208,6 @@
                                             location.reload(true);
                                         }
                                     });
-                                    console.log(result);
                                 },
                                 error: (errdata) => {
                                     Swal.fire({
@@ -239,7 +236,6 @@
                                     });
                                 },
                                 error: (errdata) => {
-                                    console.log(errdata);
                                     Swal.fire({
                                         icon: "warning",
                                         title: "eRoRr",
