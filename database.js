@@ -5,7 +5,8 @@ var db = new Datastore({ filename: creds.nedb.path, autoload: true });
 async function newUser (name, time) {
     let user = {
         "username" : name,
-        "times" : [parseInt(time)]
+        "times" : [parseInt(time)],
+        "date" : [Date.now()]
     };
     return new Promise ((accept) => {
         db.insert(user, (err, newDocs) => {
@@ -24,7 +25,7 @@ async function getUserData (id) {
 
 async function insertTime (id, time) {
     await getUserData(id);
-    console.log("new Time" + time);
+    console.log("new Time " + time);
 
     return new Promise ((accept) => {
         db.update({
@@ -32,7 +33,8 @@ async function insertTime (id, time) {
         }, 
         { 
             $push: {
-                "times": parseInt(time)
+                "times": parseInt(time),
+                "date" : Date.now()
             } 
         }, {}, function () {
             accept('true');
