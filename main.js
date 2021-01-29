@@ -10,6 +10,16 @@ app.use(cookieParser());
 
 app.use("/",express.static("./src"));
 
+//Time data to front end
+app.get('/getData', async function (req, res) {
+  params = req.query;
+  const userData = await db.getUserData(params.id);
+  res.status(200).json({
+    x: userData[0].date,
+    y: userData[0].times
+  });
+});
+
 //timing API
 app.get('/timegoesbrr', async function (req, res) {
     params = req.query;
@@ -62,7 +72,7 @@ app.get('/timegoesbrr', async function (req, res) {
       const id = params.i;
       await db.insertTime (id, params.t);
     }
-})
+});
 
 
 app.listen(config.webserver.port);
