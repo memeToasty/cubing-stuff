@@ -2,6 +2,7 @@
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -45,6 +46,11 @@
                     <p>lOgInIdEnTiFicAtIoNdEvIcE:<input id="loginname" type="text"/></p>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <canvas id="data" width="600" height="400"></canvas>
+                </div>
+            </div>
     </div>
     </body>
     <script>
@@ -61,6 +67,60 @@
         var end;
         var timerObject = document.getElementById("timer");
         var scrambleObject = document.getElementById("scramble");
+
+        function millisecondsToSecondsArray(arr) {
+            newT = [];
+            arr.forEach(element => {
+                newT.push(element / 1000)
+            });
+            console.log(newT)
+            return newT
+        }
+
+        function format_time(s) {
+            const dateObject = new Date (s);
+            return dateObject.toLocaleString();
+        }
+        
+        function timifyArray (arr) {
+            newArr = []
+            arr.forEach(element => {
+               newArr.push(format_time(element));
+            });
+            return newArr
+        }
+        async function getUserData(id) {
+            return new Promise((accept) => {
+                $.ajax({
+                    method: "get",
+                    url: "getData?id=" + id,
+                    success: (data) => {
+                        console.log(data);
+                        accept(data);
+                    }
+                });
+            });
+        }
+
+        async function generatePlot(id) {
+            const stuff = await getUserData(id);
+
+            var ctx = document.getElementById('data').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timifyArray(stuff.x),
+                    datasets: [{
+                        label: "Time",
+                        data: millisecondsToSecondsArray(stuff.y),
+                        borderColor: "#e2b714",
+                        pointBorderColor: "#e2b714",
+                        fill: false
+                    }]
+                }
+            });
+
+        }
 
         function parseCookies () {
             parsed = document.cookie
@@ -91,8 +151,7 @@
             return scrlist;
         }
 
-        // sauce : https://stackoverflow.com/questions/21294302/converting-milliseconds-to-minutes-and-seconds-with-javascript
-        
+        // sauce : https://stackoverflow.com/questions/21294302/converting-milliseconds-to-minutes-and-seconds-with-javascript   
         function timify (duration) {
         var milliseconds = parseInt((duration%1000))
             , seconds = parseInt((duration/1000)%60)
@@ -243,8 +302,10 @@
                 $("#session").show();
                 $("#newUserText").hide();
                 $("#login").hide();
+                generatePlot(cookies.id);
             } else {
                 $("#session").hide();
+                //$("#data").hide();
             }
 
             $("#userForm").hide();
