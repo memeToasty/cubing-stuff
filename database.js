@@ -25,7 +25,6 @@ async function getUserData (id) {
 
 async function insertTime (id, time) {
     await getUserData(id);
-    console.log("new Time " + time);
 
     return new Promise ((accept) => {
         db.update({
