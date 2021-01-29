@@ -39,6 +39,12 @@
                     <p>Username:<input id="username" type="text"/></p>
                 </div>
             </div>
+            <hr>
+            <div class="row">
+                <div class="col" id="login">
+                    <p>lOgInIdEnTiFicAtIoNdEvIcE:<input id="loginname" type="text"/></p>
+                </div>
+            </div>
     </div>
     </body>
     <script>
@@ -150,12 +156,66 @@
                                 error: (errdata) => {
                                     Swal.fire({
                                         icon: "warning",
-                                        title: "fEhLeR",
+                                        title: "eRoRr",
                                         text: errdata
                                     });
                                 }
                             });
 
+                        } else if (document.getElementById("loginname").value != "") {
+                            lid = document.getElementById("loginname").value;
+                            apiCall = "timegoesbrr?li=" + lid + "&t=" + String(timedelta);
+                            $.ajax({
+                                method: "get",
+                                url: apiCall,
+                                success: (result) => {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "LogIn successfull",
+                                        text: result.id
+                                    }).then((response) => {
+                                        if (response.isConfirmed) {
+                                            location.reload(true);
+                                        }
+                                    });
+                                },
+                                error: (errdata) => {
+                                    console.log(errdata);
+                                    Swal.fire({
+                                        icon: "warning",
+                                        title: "eRoRr",
+                                        text: errdata
+                                    })
+                                }
+                            });
+
+                        } 
+                        // Submit time
+                        else if (document.cookie.includes("id")) {
+                            cookies = parseCookies();
+                            id = cookies.id;
+                            apiCall = "timegoesbrr?i=" + id + "&t=" + String(timedelta);
+
+                            $.ajax({
+                                method: "get",
+                                url: apiCall,
+                                success: () => {
+                                    location.reload(true);
+                                }
+                            });
+
+                        }
+                        else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "No username was specified",
+                                text: "Your time couldn't be saved, because you weren't logged in, nor did you try to register an account",
+                                showCancelButton: false
+                            }).then((response) => {
+                                if (response.isConfirmed) {
+                                    location.reload(true);
+                                }
+                            });
                         }
                         setScramble ();
                     }
@@ -166,6 +226,7 @@
 
         $("#newUser").click(function() {
             $("#userForm").toggle(200);
+            $("#login").toggle(200);
         });
         $("#logout").click(function() {
             $.removeCookie("id");
@@ -181,6 +242,7 @@
                 $(".usernameField").text(cookies.name);
                 $("#session").show();
                 $("#newUserText").hide();
+                $("#login").hide();
             } else {
                 $("#session").hide();
             }
