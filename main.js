@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const cookieParser = require('cookie-parser')
 const db = require('./database.js');
+const config = require('./credentials.json');
 const { time } = require('console');
 
 const app = express();
@@ -64,4 +65,4 @@ app.get('/timegoesbrr', async function (req, res) {
 })
 
 
-app.listen(8888);
+app.listen(config.webserver.port);
