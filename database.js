@@ -1,21 +1,45 @@
 var Datastore = require('nedb');
 var creds = require('./credentials.json');
 var db = new Datastore({ filename: creds.nedb.path, autoload: true });
-module.exports = {
-    newUser: async (name, time) => {
-        let user = {
-            "username" : name,
-            "times" : time
-        };
-        return new Promise ((accept) => {
-            db.insert(user, (err, newDocs) => {
-                accept(newDocs._id);
-            });
+
+async function newUser (name, time) {
+    let user = {
+        "username" : name,
+        "times" : [parseInt(time)]
+    };
+    return new Promise ((accept) => {
+        db.insert(user, (err, newDocs) => {
+            accept(newDocs._id);
         });
-    },
-    getUserData: (id) => {
-        db.find({_id : id}, function (err, docs) {
-            console.log (docs);
-        });
-    }
+    });
 }
+
+async function getUserData (id) {
+    return new Promise ((accept) => {
+        db.find({_id : id}, function (err, docs) {
+            accept(docs);
+        });
+    });
+}
+
+async function insertTime (id, time) {
+    await getUserData(id);
+    console.log("new Time" + time);
+
+    return new Promise ((accept) => {
+        db.update({
+            _id: id
+        }, 
+        { 
+            $push: {
+                "times": parseInt(time)
+            } 
+        }, {}, function () {
+            accept('true');
+        });
+    });
+}
+
+exports.newUser = newUser;
+exports.getUserData = getUserData;
+exports.insertTime = insertTime;
