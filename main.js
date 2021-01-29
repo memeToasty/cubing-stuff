@@ -33,7 +33,7 @@ app.get('/timegoesbrr', async function (req, res) {
     } 
     // log in
     else if (params.li) {
-      const id = params.i;
+      const id = params.li;
       const result = await db.getUserData(id);
       console.log(result);
       if (result.length == 1) {
